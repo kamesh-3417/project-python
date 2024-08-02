@@ -1,0 +1,120 @@
+{% extends 'header.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<script src="http://js.stripe.com/v3/"></script>   
+  </head>
+  <body class="goto-here">
+    <div class="hero-wrap hero-bread" style="background-image: url('{% static 'images/bg_6.jpg' %}');">
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+          <div class="col-md-9 ftco-animate text-center">
+          	<p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Products</span></p>
+            <h1 class="mb-0 bread">Collection Products</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="ftco-section bg-light">
+    	<div class="container">
+    		<div class="row">
+    			<div class="col-md-8 col-lg-10 order-md-last">
+    				<div class="row">  
+
+
+    					{% for i in carts %}
+		    			<div class="col-sm-6 col-md-6 col-lg-4 ftco-animate">
+		    				<div class="product">
+		    					<a href="{% url 'single-product' pk=i.product.pk %}" class="img-prod"><img class="img-fluid" src="{{i.product.product_image.url}}" alt="Colorlib Template" style="width:300px;height:300px;">
+		    						<span class="status">30%</span>
+		    						<div class="overlay"></div>
+		    					</a>
+		    					<div class="text py-3 px-3">
+		    						<h3><a href="#">{{i.product.product_name}}</a></h3>
+		    						<div class="d-flex">
+		    							<div class="pricing">
+				    						<p class="price"><span class="mr-2 price">Price :{{i.product.product_price}}</span></p>
+				    						<p class="price">
+				    							<span class="mr-2 price">
+				    							<form action="{% url 'change-qty' %}" method="post">
+				    								{% csrf_token %}
+				    								<input type="hidden" name="cid" value="{{i.pk}}">
+				    								Qty : <input type="number" min="1" max="10" value="{{i.product_qty}}" name="product_qty" onchange="this.form.submit();">
+				    						</form>
+				    						</span>
+				    					</p>
+				    					<p class="price"><span class="mr-2 price">Total Price :{{i.total_price}}</span></p>
+				    					</div>
+				    					
+			    					</div>
+			    						
+		    					</div>
+		    				</div>
+		    			</div>
+
+
+		    			{% endfor %}
+		    	</div>
+		    	<h1>Net Price : {{net_price}}</h1>
+		    	<form method="post">
+              <input type="hidden" id="net_price" name="amount" value="{{net_price}}">
+              <button type="button" class="btn btn-lg btn-primary" id="checkout-button">Checkout</button>
+            </form>
+		    	</div>
+		    	<div class="col-md-4 col-lg-2 sidebar">
+		    		<div class="sidebar-box-2">
+		    			<h2 class="heading mb-4"><a href="#">Category</a></h2>
+		    			<ul>
+		    				<li><a href="{% url 'product-category' cat='All' %}">All</a></li>
+		    				<li><a href="{% url 'product-category' cat='Men' %}">Men</a></li>
+								<li><a href="{% url 'product-category' cat='Women' %}">Women</a></li>
+								<li><a href="{% url 'product-category' cat='Kids' %}">Kids</a></li>
+								
+								
+		    			</ul>
+		    		</div>
+		    		
+    			</div>
+    		</div>
+    	</div>
+    </section>
+    <script type="text/javascript">
+
+var stripe = Stripe('pk_test_51OmBp0SHKNzFw0b1AvUw0km2BChmj49INdEZGrxpsmi8MiOhXuGP5EgVPD7WuRzJ8LeykpB2MnmZIn5qnaBT3qKJ00y9HHDslM');
+var checkoutButton = document.getElementById('checkout-button');
+
+checkoutButton.addEventListener('click', function() { 
+ fetch('/create-checkout-session/', {
+ method: 'POST',
+    headers:{
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+
+    },
+    body: JSON.stringify({'post_data':'{{net_price}}'})
+ })
+ .then(function(response) {
+ return response.json();
+ })
+ .then(function(session) {
+ return stripe.redirectToCheckout({ sessionId: session.id });
+ })
+ .then(function(result) {
+ // If `redirectToCheckout` fails due to a browser or network
+ // error, you should display the localized error message to your
+ // customer using `error.message`.
+ if (result.error) {
+ alert(result.error.message);
+ }
+ })
+ .catch(function(error) {
+ console.error('Error:', error);
+ });
+ });
+ </script>
+  </body>
+</html>
+{% endblock %}

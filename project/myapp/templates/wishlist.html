@@ -1,0 +1,81 @@
+{% extends 'header.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+  </head>
+  <body class="goto-here">
+    <div class="hero-wrap hero-bread" style="background-image: url('{% static 'images/bg_6.jpg' %}');">
+      <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+          <div class="col-md-9 ftco-animate text-center">
+          	<p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Products</span></p>
+            <h1 class="mb-0 bread">Collection Products</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="ftco-section bg-light">
+    	<div class="container">
+    		<div class="row">
+    			<div class="col-md-8 col-lg-10 order-md-last">
+    				<div class="row">
+
+
+    					{% for i in wishlists %}
+		    			<div class="col-sm-6 col-md-6 col-lg-4 ftco-animate">
+		    				<div class="product">
+		    					<a href="{% url 'single-product' pk=i.product.pk %}" class="img-prod"><img class="img-fluid" src="{{i.product.product_image.url}}" alt="Colorlib Template" style="width:300px;height:300px;"	>
+		    						<span class="status">30%</span>
+		    						<div class="overlay"></div>	
+		    					</a>
+		    					<div class="text py-3 px-3">
+		    						<h3><a href="#">{{i.product.product_name}}</a></h3>
+		    						<div class="d-flex">
+		    							<div class="pricing">
+				    						<p class="price"><span class="mr-2 price-dc">{{i.product.product_price}}</span></p>
+				    					</div>
+				    					
+			    					</div>
+			    					{% if request.session.email %}
+			    					<p class="bottom-area d-flex px-3">
+		    							<a href="#" class="add-to-cart text-center py-2 mr-1"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
+		    							<a href="#" class="buy-now text-center py-2">Add To Wishlist<span><i class="ion-ios-heart ml-1"></i></span></a>
+		    						</p>
+		    						{% else %}
+		    							<p class="bottom-area d-flex px-3">
+		    								<a href="{% url 'login' %}" class="add-to-cart text-center py-2 mr-1">Login</a>
+		    							</p>	
+		    						{% endif %}	
+		    					</div>
+		    				</div>
+		    			</div>
+
+
+		    			{% endfor %}
+		    	</div>
+
+		    	<div class="col-md-4 col-lg-2 sidebar">
+		    		<div class="sidebar-box-2">
+		    			<h2 class="heading mb-4"><a href="#">Category</a></h2>
+		    			<ul>
+		    				<li><a href="{% url 'product-category' cat='All' %}">All</a></li>
+		    				<li><a href="{% url 'product-category' cat='Men' %}">Men</a></li>
+								<li><a href="{% url 'product-category' cat='Women' %}">Women</a></li>
+								<li><a href="{% url 'product-category' cat='Kids' %}">Kids</a></li>
+								
+								
+		    			</ul>
+		    		</div>
+		    		
+    			</div>
+    		</div>
+    	</div>
+    </section>
+ 
+  </body>
+</html>
+{% endblock %}
